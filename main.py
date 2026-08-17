@@ -104,6 +104,10 @@ def input_matrix(name, size=3):
     """사용자에게 숫자 행렬을 한 줄씩 입력받는다."""
     print("\n" + name + "을(를) 입력하세요.")
     matrix = []
+    error_message = (
+        "입력 형식 오류: 각 줄에 " + str(size)
+        + "개의 숫자를 공백으로 구분해 입력하세요."
+    )
 
     for row_number in range(1, size + 1):
         while True:
@@ -111,13 +115,13 @@ def input_matrix(name, size=3):
             values = row_text.split()
 
             if len(values) != size:
-                print("입력 형식 오류: 각 줄에 3개의 숫자를 공백으로 구분해 입력하세요.")
+                print(error_message)
                 continue
 
             try:
                 row = [float(value) for value in values]
             except ValueError:
-                print("입력 형식 오류: 각 줄에 3개의 숫자를 공백으로 구분해 입력하세요.")
+                print(error_message)
                 continue
 
             matrix.append(row)
@@ -166,6 +170,11 @@ def run_manual_mode():
     else:
         decision = "B"
 
+    if decision == "UNDECIDED":
+        display_decision = "판정 불가"
+    else:
+        display_decision = decision
+
     print("\n=== 판정 결과 ===")
     print("필터 A MAC 점수:", format_score(score_a))
     print("필터 B MAC 점수:", format_score(score_b))
@@ -174,7 +183,7 @@ def run_manual_mode():
         format(average_ms, ".6f"),
         "ms"
     )
-    print("판정:", decision)
+    print("판정:", display_decision)
 
 
 def load_json_data(filename="data.json"):
@@ -384,6 +393,9 @@ def run_json_mode():
 
     filters = data.get("filters")
     patterns = data.get("patterns")
+    if not isinstance(filters, dict):
+        print("오류: filters 데이터가 없거나 객체 형식이 아닙니다.")
+        return
     if not isinstance(patterns, dict):
         print("오류: patterns 데이터가 없거나 객체 형식이 아닙니다.")
         return
